@@ -3,6 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session  # Session をインポート
 from db import SessionLocal, init_db  # db を相対インポート
 import models
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -34,6 +37,7 @@ def get_db():
 @app.get("/user")
 def read_user(db: Session = Depends(get_db)):
     users = db.query(models.User).all()
+    logger.info(f"Fetched {len(users)} users")
     return users
 
 
@@ -41,8 +45,22 @@ def read_user(db: Session = Depends(get_db)):
 @app.get("/restaurant")
 def read_restaurant(db: Session = Depends(get_db)):
     restaurant = db.query(models.Restaurant).filter(models.Restaurant.restaurant_id ==1 ).all()
+    logger.info(f"Fetched {len(restaurant)} restaurants")
     return restaurant
 
 
+@app.get("/bookmark")
+def read_restaurant(db: Session = Depends(get_db)):
+    bookmark = db.query(models.Bookmark).all()
+    logger.info(f"Fetched {len(bookmark)} bookmarks")
+    return bookmark
 
-# その他のエンドポイントや関数はここに追加する
+
+@app.get("/bookmark/{column_id}")
+def get_bookmark(column_id: int, db: Session = Depends(get_db)):
+    
+    bookmark = db.query(models.Bookmark).filter(models.Bookmark.column_id == column_id).all()
+    logger.info(bookmark)
+    logger.info("bookmarkのカラムから取得してる")
+    return bookmark
+
