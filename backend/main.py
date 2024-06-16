@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session  # Session をインポート
 from db import SessionLocal, init_db  # db を相対インポート
-from models import User  # models を相対インポート
+import models
 
 app = FastAPI()
 
@@ -33,7 +33,16 @@ def get_db():
 # ユーザ情報を取得するエンドポイント
 @app.get("/user")
 def read_user(db: Session = Depends(get_db)):
-    users = db.query(User).all()
+    users = db.query(models.User).all()
     return users
+
+
+
+@app.get("/restaurant")
+def read_restaurant(db: Session = Depends(get_db)):
+    restaurant = db.query(models.Restaurant).filter(models.Restaurant.restaurant_id ==1 ).all()
+    return restaurant
+
+
 
 # その他のエンドポイントや関数はここに追加する
