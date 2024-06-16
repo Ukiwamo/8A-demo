@@ -1,24 +1,32 @@
 import React, { useState, useEffect } from 'react';
 
-const App = () => {
-  const [data, setData] = useState(null);
+const UserComponent = () => {
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:8000/')
-      .then(response => response.json())
-      .then(data => {
-        setData(data.message);
-      })
-      .catch(error => {
-        console.error('There was an error fetching the data!', error);
-      });
-  }, []);
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/user');
+        const data = await response.json();
+        setUsers(data);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchUsers();
+  }, []); // [] を渡すことで初回のマウント時のみ実行される
 
   return (
     <div>
-      <h1>{data ? data : 'Loading...'}</h1>
+      <h1>User List    データベースからとってきたやつ！</h1>
+      <ul>
+        {users.map(user => (
+          <li key={user.user_id}>{user.mail}</li>
+        ))}
+      </ul>
     </div>
   );
 };
 
-export default App;
+export default UserComponent;

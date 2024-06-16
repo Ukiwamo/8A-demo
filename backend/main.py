@@ -1,13 +1,12 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-import sqlite3
-from pydantic import BaseModel
-
-from typing import Optional
-
+from sqlalchemy.orm import Session  # Session をインポート
+from db import SessionLocal, init_db  # db を相対インポート
+from models import User  # models を相対インポート
 
 app = FastAPI()
 
+# CORS設定
 origins = [
     "http://localhost:3000",  # React開発サーバーのアドレス
 ]
@@ -20,41 +19,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-def read_root():
-    return {"message": "this sentence is from main.py"}
+# データベースの初期化
+init_db()
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str = None):
-    return {"item_id": item_id, "q": q}
+# データベースセッションの依存性注入
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
+# ユーザ情報を取得するエンドポイント
+@app.get("/user")
+def read_user(db: Session = Depends(get_db)):
+    users = db.query(User).all()
+    return users
 
-# # ユーザー情報を取得するエンドポイント
-# @app.get("/tasks/")
-# async def read_tasks():
-#     tasks = []
-#     # データベースからタスク情報を取得
-#     with conn:
-#         cursor = conn.execute("SELECT * FROM task")
-#         for row in cursor.fetchall():
-#             tasks.append(dict(row))
-#     return tasks
-
-
-# @app.get("/practice/{content}")
-# async def pra(content):
-#     return {"reply": content}
-
-# @app.get("/practice2/")
-# async def pra2(content: str, detail: str):
-#     return {
-#         "content": content,
-#         "detail": detail
-#     }
-
-
-
-
-# @app.post("/item/")
-# async def create_item(item: Item):
-#     return item
+# その他のエンドポイントや関数はここに追加する

@@ -1,19 +1,16 @@
-# database.py
-from sqlalchemy import create_engine, MetaData
-from databases import Database
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
+from models import Base, User, Bookmark, Restaurant  # models を相対インポート
 
-user = 'root'
-password = 'Iwassy15'
-hostname = 'localhost'
-port = 3306
-database = '8Apra'
+# データベースの接続情報
+SQLALCHEMY_DATABASE_URL = "mysql+mysqlconnector://root:Iwassy15@localhost/8Apra"
 
-# 接続URLを作成します
-DATABASE_URL = f'mysql+pymysql://{user}:{password}@{hostname}:{port}/{database}'
+# SQLAlchemyエンジンの作成
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
+# セッションの作成
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-
-database = Database(DATABASE_URL)
-metadata = MetaData()
-
-engine = create_engine(DATABASE_URL)
+# 初期化関数
+def init_db():
+    Base.metadata.create_all(bind=engine)
