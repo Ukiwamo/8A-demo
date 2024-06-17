@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
+/* import CustomButton from '.~/frontend/src/CustomButton.jsx'; */
+import './index.css';
 
 const UserComponent = () => {
   const [users, setUsers] = useState([]);
-  const [restaurants, setRestaurants] = useState([]);
+  const [restaurants, setRestaurants] = useState([]);}
+
+  function App() {
+    const handleClick = () => {
+      alert('ボタンがクリックされました');//記述した
+    };
+
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -34,7 +42,7 @@ const UserComponent = () => {
   }, []); // [] を渡すことで初回のマウント時のみ実行される
 
   return (
-    <div>
+  <div>
       <h1>User List    データベースからとってきたやつ！</h1>
       <ul>
         {users.map(user => (
@@ -50,14 +58,15 @@ const UserComponent = () => {
           ))}
       </ul>
     </div>
-    </div>
 
+    <div className="flex items-center justify-center h-screen bg-gray-100">
+    <CustomButton onClick={handleClick}>
+      クリックしてください
+    </CustomButton>
+    </div>      
+  </div>
     
   );
 };
 
-export default UserComponent;
-
-
-
-
+export default App;
