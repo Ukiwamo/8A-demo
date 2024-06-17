@@ -4,7 +4,7 @@ const UserComponent = () => {
   const [users, setUsers] = useState([]);
   const [restaurants, setRestaurants] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
-  const [bookmarkNum, setBookmarkNum] = useState(null); // 追加：data_bookmark_num 用の状態変数
+  const [bookmarkNum, setBookmarkNum] = useState({ bookmarks: [], restaurant: null });
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -51,16 +51,17 @@ const UserComponent = () => {
   useEffect(() => {
     const fetchBookmarkNum = async () => {
       try {
-        const response = await fetch('http://localhost:8000/bookmark/1');
-        const data = await response.json();
-        setBookmarkNum(data); // 状態変数に設定
+        const response = await fetch(`http://localhost:8000/bookmark/8`); // ここを適切な column_id に修正
+        const [bookmark, restaurantInfo] = await response.json();
+        setBookmarkNum({ bookmarks: bookmark, restaurant: restaurantInfo });
       } catch (error) {
-        console.error('Error fetching BookmarkNum:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
-    fetchBookmarkNum(); // 関数の呼び出しを修正
-  }, []); 
+    fetchBookmarkNum();
+  }, []);
+
 
   return (
     <div>
@@ -90,19 +91,33 @@ const UserComponent = () => {
       </div>
 
       <div>
-  <h1>BookmarkとRestaurantの結び付け練習</h1>
-  <ul>
-    {bookmarkNum && bookmarkNum.map(num => (
-      <li key={num.column_id}>
+        <h1>Bookmark and Restaurant Information</h1>
+        <ul>
+          {bookmarkNum.bookmarks && bookmarkNum.bookmarks.map((bookmark, index) => (
+            <li key={index}>
+              <div>
+                <h2>Bookmark</h2>
+                <p>Column ID: {bookmark.column_id}</p>
+                <p>User ID: {bookmark.user_id}</p>
+                <p>Memo: {bookmark.memo}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
         <div>
-          <span>column id: {num.column_id}</span><br />
-          <span>memo content: {num.memo}</span>
+          <h2>Restaurant</h2>
+          {bookmarkNum.restaurant && (
+            <div>
+              <p>Restaurant ID: {bookmarkNum.restaurant.restaurant_id}</p>
+              <p>Name: {bookmarkNum.restaurant.name}</p>
+              <p>Longitude: {bookmarkNum.restaurant.longitude}</p>
+              <p>Latitude: {bookmarkNum.restaurant.latitude}</p>
+            </div>
+          )}
         </div>
-      </li>
-    ))}
-  </ul>
-</div>
-</div>
+      </div>
+
+    </div>
   );
 };
 
