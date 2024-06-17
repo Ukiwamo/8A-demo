@@ -69,4 +69,4 @@ const UserComponent = () => {
   );
 };
 
-export default App;
+export default UserComponent
